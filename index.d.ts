@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type { LaunchOptions } from 'playwright';
+import type { LaunchOptions } from '@cloudflare/playwright';
 import type { Server } from '@modelcontextprotocol/sdk/server/index.js';
 
 type Options = {

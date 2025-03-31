@@ -21,7 +21,7 @@ import { Context } from './context';
 
 import type { Tool } from './tools/tool';
 import type { Resource } from './resources/resource';
-import type { LaunchOptions } from 'playwright';
+import type { BrowserWorker, LaunchOptions } from '@cloudflare/playwright';
 
 type Options = {
   name: string;
@@ -32,9 +32,9 @@ type Options = {
   launchOptions?: LaunchOptions;
 };
 
-export function createServerWithTools(options: Options): Server {
-  const { name, version, tools, resources, userDataDir, launchOptions } = options;
-  const context = new Context(userDataDir, launchOptions);
+export function createServerWithTools(endpoint: BrowserWorker, options: Options): Server {
+  const { name, version, tools, resources } = options;
+  const context = new Context(endpoint);
   const server = new Server({ name, version }, {
     capabilities: {
       tools: {},

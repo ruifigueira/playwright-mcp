@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import * as playwright from 'playwright';
+import * as playwright from '@cloudflare/playwright';
 
 export class Context {
-  private _userDataDir: string;
-  private _launchOptions: playwright.LaunchOptions | undefined;
+  private _endpoint: playwright.BrowserWorker;
   private _browser: playwright.Browser | undefined;
   private _page: playwright.Page | undefined;
   private _console: playwright.ConsoleMessage[] = [];
@@ -26,9 +25,8 @@ export class Context {
   private _fileChooser: playwright.FileChooser | undefined;
   private _lastSnapshotFrames: playwright.FrameLocator[] = [];
 
-  constructor(userDataDir: string, launchOptions?: playwright.LaunchOptions) {
-    this._userDataDir = userDataDir;
-    this._launchOptions = launchOptions;
+  constructor(endpoint: playwright.BrowserWorker) {
+    this._endpoint = endpoint;
   }
 
   async createPage(): Promise<playwright.Page> {
@@ -96,18 +94,9 @@ export class Context {
   }
 
   private async _createPage(): Promise<{ browser?: playwright.Browser, page: playwright.Page }> {
-    if (process.env.PLAYWRIGHT_WS_ENDPOINT) {
-      const url = new URL(process.env.PLAYWRIGHT_WS_ENDPOINT);
-      if (this._launchOptions)
-        url.searchParams.set('launch-options', JSON.stringify(this._launchOptions));
-      const browser = await playwright.chromium.connect(String(url));
-      const page = await browser.newPage();
-      return { browser, page };
-    }
-
-    const context = await playwright.chromium.launchPersistentContext(this._userDataDir, this._launchOptions);
-    const [page] = context.pages();
-    return { page };
+    const browser = await playwright.launch(this._endpoint);
+    const page = await browser.newPage();
+    return { browser, page };
   }
 
   async allFramesSnapshot() {

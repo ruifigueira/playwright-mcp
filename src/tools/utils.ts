@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type * as playwright from 'playwright';
+import type * as playwright from '@cloudflare/playwright';
 import type { ToolResult } from './tool';
 import type { Context } from '../context';
 
